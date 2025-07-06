@@ -1,0 +1,48 @@
+{
+    "name": "@alphanull/jsdoc-plugin-esnext",
+    "version": "1.0.0",
+    "license": "MIT",
+    "description": "Smart JSDoc plugin that adds full ES2022+ class-feature support – private fields, static members and arrow-bound methods.",
+    "keywords": [
+        "jsdoc",
+        "plugin",
+        "jsdoc-plugin",
+        "private fields",
+        "static",
+        "arrow functions",
+        "esnext",
+        "es2022",
+        "documentation"
+    ],
+    "author": {
+        "name": "Frank Kudermann",
+        "email": "kudermann@alphanull.de",
+        "url": "https://alphanull.de"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/alphanull/jsdoc-plugin-esnext.git"
+    },
+    "homepage": "https://github.com/alphanull/jsdoc-plugin-esnext#readme",
+    "bugs": {
+        "url": "https://github.com/alphanull/jsdoc-plugin-esnext/issues"
+    },
+    "type": "module",
+    "main": "index.js",
+    "exports": {
+        ".": "./index.js"
+    },
+    "files": [
+        "assets",
+        "index.js",
+        "README.md",
+        "LICENSE"
+    ],
+    "publishConfig": {
+        "access": "public"
+    },
+    "sideEffects": false,
+    "engines": {
+        "node": ">=16.0.0"
+    }
+}
