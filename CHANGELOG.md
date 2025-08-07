@@ -2,7 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
-This project adheres to [Semantic Versioning](https://semver.org) and follows the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.1.0] - 2025-08-07
+
+### Added
+
+- **Fix for ES6 default export issues**: The plugin now corrects wrong names and structures for exported classes, functions, object literals, and their members.
+  - Fixes the issue where default exports appear as `exports` instead of their actual names
+  - Corrects class method scoping and memberof relationships
+  - Extracts meaningful names from `@type` annotations for object literals
+  - Properly links class members (constructor, properties, methods) to their parent class
+  - Resolves [JSDoc Issue #1132](https://github.com/jsdoc/jsdoc/issues/1132)
+  - Resolves [JSDoc Issue #2023](https://github.com/jsdoc/jsdoc/issues/2023)
+  - Resolves [JSDoc Issue #2038](https://github.com/jsdoc/jsdoc/issues/2038)
 
 ---
 

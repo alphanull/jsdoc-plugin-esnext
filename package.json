@@ -1,8 +1,8 @@
 {
     "name": "@alphanull/jsdoc-plugin-esnext",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "license": "MIT",
-    "description": "Smart JSDoc plugin that adds full ES2022+ class-feature support – private fields, static members and arrow-bound methods.",
+    "description": "JSDoc plugin that adds full ES2022+ class-feature support – private fields, static members, arrow-bound methods, and ES6 default export fixes.",
     "keywords": [
         "jsdoc",
         "plugin",

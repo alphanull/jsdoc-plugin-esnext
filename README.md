@@ -3,7 +3,7 @@
 
 # JSDoc ESNext Plugin
 
-**Smart JSDoc plugin that adds full ES2022+ class-feature support – private fields, static members and arrow-bound methods.**
+**JSDoc plugin that adds full ES2022+ class-feature support – private fields, static members, arrow-bound methods, as well as ES6 default export fixes.**
 
 Modern JavaScript syntax isn’t always accurately recognized by JSDoc. This plugin enables accurate recognition of modern ECMAScript class structures and enhances the resulting documentation.
 
@@ -14,6 +14,7 @@ Modern JavaScript syntax isn’t always accurately recognized by JSDoc. This plu
 * Detects `static` class members and applies `@static` and `scope: static`.
 * Treats arrow-bound methods as `@function`.
 * Detects assignments like `this.#foo = ...` in constructors.
+* **Fixes various ES6 default export issues** - corrects wrong names and structures for exported classes, functions, object literals, and their members.
 * Works seamlessly with JSDoc's default parser.
 * Works with all themes (but see note below!).
 * Perfectly integrates with [VisionTheme](https://github.com/alphanull/jsdoc-vision-theme) for a modern UI (optional).
@@ -35,7 +36,7 @@ Then, add the plugin to your JSDoc configuration file:
 }
 ```
 
-## Example
+## ES2022 Example
 
 ```js
 export default class Example {
@@ -73,9 +74,9 @@ export default class Example {
 }
 ```
 
-### Resulting Documentation:
+### Resulting Documentation
 
-| ![before](assets/before.jpg) | ![after](assets/after.jpg) |
+| ![before](assets/private-before.jpg) | ![after](assets/private-after.jpg) |
 | :----------------------------------------------------------: | :----------------------------------------------------------: |
 |                      **Without plugin**                      |                **Using jsdoc-plugin-esnext**                 |
 
@@ -83,6 +84,37 @@ export default class Example {
 * `#secret` is listed as `private static`.
 * `#handleClick` is listed as a private function.
 * `#compute()` is listed as a private method.
+
+## Exports Example
+
+```js
+/**
+ * Exported as default class.
+ */
+export default class FooClass {
+    /**
+     * FooClass constructor.
+     * @param {string} message - Additional message.
+     */
+    constructor(message) { }
+    /**
+     * This is a class method.
+     * @param {any} someArg - An arg you need to pass.
+     */
+    classMethod(someArg) {
+    this.fooAClassMethod(this.message);
+    }
+}
+```
+
+### Resulting Documentation
+
+| ![before](assets/exports-before.jpg) | ![after](assets/exports-after.jpg) |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                      **Without plugin**                      |                **Using jsdoc-plugin-esnext**                 |
+
+* `FooClass` is named correctly (not `exports`).
+* Class members (constructor, properties, methods) are correctly linked to their parent class and do not appear in `Global`.
 
 ## Limitations
 
