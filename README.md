@@ -14,7 +14,9 @@ Modern JavaScript syntax isn’t always accurately recognized by JSDoc. This plu
 * Detects `static` class members and applies `@static` and `scope: static`.
 * Treats arrow-bound methods as `@function`.
 * Detects assignments like `this.#foo = ...` in constructors.
-* **Fixes various ES6 default export issues** - corrects wrong names and structures for exported classes, functions, object literals, and their members.
+* Fixes various ES6 default export issues - corrects wrong names and structures for exported classes, functions, object literals, and their members.
+* Static class properties are correctly parsed with static scope instead of instance scope.
+* ES6 class mixin static members retain their static scope during augmentation.
 * Works seamlessly with JSDoc's default parser.
 * Works with all themes (but see note below!).
 * Perfectly integrates with [VisionTheme](https://github.com/alphanull/jsdoc-vision-theme) for a modern UI (optional).
@@ -115,6 +117,53 @@ export default class FooClass {
 
 * `FooClass` is named correctly (not `exports`).
 * Class members (constructor, properties, methods) are correctly linked to their parent class and do not appear in `Global`.
+
+## Static Properties & Mixins Example
+
+```js
+/**
+ * ES6 class mixin with static members.
+ * @mixin TestMixin
+ */
+class TestMixin {
+  /**
+   * Static property - correctly parsed as static scope.
+   * @type {string}
+   */
+  static staticProp = 'static';
+
+  /**
+   * Static method - correctly retains static scope during augmentation.
+   * @returns {string}
+   */
+  static staticMethod() {
+    return 'static';
+  }
+}
+
+/**
+ * Class using the mixin.
+ * @class TestClass
+ * @mixes TestMixin
+ */
+class TestClass extends TestMixin {
+  /**
+   * Class static property - correctly parsed as static scope.
+   * @type {string}
+   */
+  static classStaticProp = 'classStatic';
+}
+```
+
+### Resulting Documentation
+
+| ![before](assets/static-before.jpg) | ![after](assets/static-after.jpg) |
+| :----------------------------------------------------------: | :----------------------------------------------------------: |
+|                      **Without plugin**                      |                **Using jsdoc-plugin-esnext**                 |
+
+* `TestClass.staticProp` appears with `@static` and scope `static` (fixes JSDoc Bug #2144).
+* `TestClass.staticMethod` retains static scope during mixin augmentation (fixes JSDoc Bug #2146).
+* `TestClass.classStaticProp` is correctly parsed as static scope.
 
 ## Limitations
 

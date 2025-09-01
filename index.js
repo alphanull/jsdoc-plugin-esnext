@@ -3,9 +3,11 @@
  * - Native private methods (#method())
  * - Native private properties (#property)
  * - Bound arrow functions (#method = () => {})
+ * - Static class properties (fixes JSDoc bug #2144)
+ * - ES6 class mixin static members (fixes JSDoc bug #2146)
  * It injects missing @function and @private tags where necessary and formats the resulting doclets consistently.
  * @author  Frank Kudermann @ alphanull
- * @version 1.0.0
+ * @version 1.2.0
  * @license MIT
  */
 export const handlers = {
@@ -44,6 +46,16 @@ export const handlers = {
                 // The method should be linked to the class name, not module.exports
                 e.code.memberof = parentClass.id.name;
                 e.code.scope = 'instance';
+            }
+        }
+
+        // Phase 1.6: Fix static class properties parsing (JSDoc bug #2144)
+        if (e.code?.type === 'ClassProperty' && e.astnode?.static === true) {
+            // Ensure static class properties are marked as static scope
+            e.code.scope = 'static';
+            // Fix the memberof to use static separator (.) instead of instance separator (#)
+            if (e.code.memberof && e.code.memberof.includes('#')) {
+                e.code.memberof = e.code.memberof.replace('#', '.');
             }
         }
 
@@ -129,10 +141,70 @@ export const handlers = {
                 }
 
                 doclet.access = 'private';
+
             }
 
-            if (doclet.meta?.code?.node?.static === true) {
+            // Phase 2.1: Fix static class properties scope (JSDoc bug #2144)
+            // Only apply to actual class properties, not module-level constants
+            if ((doclet.meta?.code?.type === 'ClassProperty' || doclet.meta?.code?.type === 'MethodDefinition') &&
+                doclet.meta?.code?.node?.static === true &&
+                doclet.memberof &&
+                !doclet.memberof.startsWith('module:')) {
                 doclet.scope = 'static';
+                // Fix longname to use static separator (.) instead of instance separator (#)
+                if (doclet.longname && doclet.longname.includes('#')) {
+                    doclet.longname = doclet.longname.replace('#', '.');
+                }
+                if (doclet.memberof && doclet.memberof.includes('#')) {
+                    doclet.memberof = doclet.memberof.replace('#', '.');
+                }
+            }
+
+            // Phase 2.2: Fix ES6 class mixin static members (JSDoc bug #2146)
+            // This prevents static members from being converted to instance during augmentation
+            if (doclet.meta?.code?.type === 'ClassProperty' || doclet.meta?.code?.type === 'MethodDefinition') {
+                const isES6ClassStatic = doclet.meta?.code?.node?.static === true;
+                const isCurrentlyStatic = doclet.scope === 'static' ||
+                                         (doclet.longname && doclet.longname.includes('.')) ||
+                                         (doclet.memberof && doclet.memberof.includes('.'));
+
+                // Preserve ES6 class static members - don't let them be converted to instance
+                if (isES6ClassStatic && isCurrentlyStatic) {
+                    // Ensure they stay static
+                    doclet.scope = 'static';
+                    // Ensure longname uses static separator
+                    if (doclet.longname && doclet.longname.includes('#')) {
+                        doclet.longname = doclet.longname.replace('#', '.');
+                    }
+                    if (doclet.memberof && doclet.memberof.includes('#')) {
+                        doclet.memberof = doclet.memberof.replace('#', '.');
+                    }
+                }
+            }
+        }
+
+        // Phase 2.9: Final fix for ALL static members (both private and public)
+        // This ensures ALL static members have correct scope, regardless of inheritance
+
+        // Step 1: Collect all member names that should be static (from AST)
+        const staticMemberNames = new Set();
+        for (const doclet of doclets) {
+            if (doclet.meta?.code?.node?.static === true) {
+                staticMemberNames.add(doclet.name);
+            }
+        }
+
+        // Step 2: Apply static scope to ALL members with these names
+        for (const doclet of doclets) {
+            if (staticMemberNames.has(doclet.name)) {
+                doclet.scope = 'static';
+                // Also ensure longname uses static separator
+                if (doclet.longname && doclet.longname.includes('#')) {
+                    doclet.longname = doclet.longname.replace('#', '.');
+                }
+                if (doclet.memberof && doclet.memberof.includes('#')) {
+                    doclet.memberof = doclet.memberof.replace('#', '.');
+                }
             }
         }
 
@@ -177,5 +249,32 @@ export const handlers = {
             }
         }
 
+    },
+
+    /**
+     * Triggered after all processing is complete, including inheritance.
+     * Final chance to fix any remaining issues.
+     */
+    processingComplete({ doclets }) {
+        // Final fix for inherited private static members
+        const staticMemberNames = new Set();
+
+        // Collect all member names that should be static
+        for (const doclet of doclets) {
+            if (doclet.meta?.code?.node?.static === true) {
+                staticMemberNames.add(doclet.name);
+            }
+        }
+
+        // Apply static scope to ALL members with these names (final pass)
+        for (const doclet of doclets) {
+            if (staticMemberNames.has(doclet.name)) {
+                doclet.scope = 'static';
+                // Only set access to private if it's actually a private member
+                if (doclet.name.startsWith('#') && !doclet.access) {
+                    doclet.access = 'private';
+                }
+            }
+        }
     }
 };
