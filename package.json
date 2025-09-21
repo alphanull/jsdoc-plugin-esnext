@@ -1,6 +1,6 @@
 {
     "name": "@alphanull/jsdoc-plugin-esnext",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "license": "MIT",
     "description": "JSDoc plugin that adds full ES2022+ class-feature support – private fields, static members, arrow-bound methods, and ES6 default export fixes.",
     "keywords": [
@@ -27,11 +27,7 @@
     "bugs": {
         "url": "https://github.com/alphanull/jsdoc-plugin-esnext/issues"
     },
-    "type": "module",
     "main": "index.js",
-    "exports": {
-        ".": "./index.js"
-    },
     "files": [
         "assets",
         "index.js",

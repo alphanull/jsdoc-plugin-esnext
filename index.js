@@ -7,10 +7,10 @@
  * - ES6 class mixin static members (fixes JSDoc bug #2146)
  * It injects missing @function and @private tags where necessary and formats the resulting doclets consistently.
  * @author  Frank Kudermann @ alphanull
- * @version 1.2.0
+ * @version 1.2.1
  * @license MIT
  */
-export const handlers = {
+const handlers = {
 
     /**
      * Triggered when a symbol (e.g. Method or field) is found during AST traversal.
@@ -278,3 +278,5 @@ export const handlers = {
         }
     }
 };
+
+module.exports = { handlers };
