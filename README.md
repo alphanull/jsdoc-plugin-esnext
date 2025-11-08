@@ -17,6 +17,7 @@ Modern JavaScript syntax isn’t always accurately recognized by JSDoc. This plu
 * Fixes various ES6 default export issues - corrects wrong names and structures for exported classes, functions, object literals, and their members.
 * Static class properties are correctly parsed with static scope instead of instance scope.
 * ES6 class mixin static members retain their static scope during augmentation.
+* Prevents duplicated mixin fields when classes declare constructors.
 * Works seamlessly with JSDoc's default parser.
 * Works with all themes (but see note below!).
 * Perfectly integrates with [VisionTheme](https://github.com/alphanull/jsdoc-vision-theme) for a modern UI (optional).
@@ -164,6 +165,16 @@ class TestClass extends TestMixin {
 * `TestClass.staticProp` appears with `@static` and scope `static` (fixes JSDoc Bug #2144).
 * `TestClass.staticMethod` retains static scope during mixin augmentation (fixes JSDoc Bug #2146).
 * `TestClass.classStaticProp` is correctly parsed as static scope.
+
+## Tests
+
+Run the integration suite to ensure all plugin features keep working:
+
+```bash
+npm test
+```
+
+Snapshots land in the destination chosen in `test/jsdoc.config.json` (default `test/output/`) for manual inspection.
 
 ## Limitations
 

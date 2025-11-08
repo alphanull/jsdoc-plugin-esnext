@@ -1,0 +1,11 @@
+{
+    "plugins": [
+        "../index.js"
+    ],
+    "opts": {
+        "destination": "./test/output",
+        "recurse": true,
+        "private": true,
+        "readme": "./test/README.md"
+    }
+}

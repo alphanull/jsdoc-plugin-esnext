@@ -5,9 +5,10 @@
  * - Bound arrow functions (#method = () => {})
  * - Static class properties (fixes JSDoc bug #2144)
  * - ES6 class mixin static members (fixes JSDoc bug #2146)
+ * - Prevent duplicated mixin fields on classes with constructors. (fixes JSDoc bug #2092)
  * It injects missing @function and @private tags where necessary and formats the resulting doclets consistently.
  * @author  Frank Kudermann @ alphanull
- * @version 1.2.1
+ * @version 1.3.0
  * @license MIT
  */
 const handlers = {
@@ -97,6 +98,11 @@ const handlers = {
 
         // Phase 2: Apply corrections for all relevant doclets
         for (const doclet of doclets) {
+
+            // Prevent duplicate mixin augmentation for synthetic/undocumented class doclets (#2092)
+            if (Array.isArray(doclet.mixes) && doclet.mixes.length > 0 && doclet.undocumented) {
+                doclet.mixes = [];
+            }
 
             // Handle value-carrying assignment doclets related to private properties
             if (doclet.kind === 'member'
